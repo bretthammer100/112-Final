@@ -11,6 +11,10 @@ loginSecure = False
 
 #---CHECKING-PASSWORDS-----------------------------------------------------------------------------------------------------------------------------
 #function for checking if passwords are strong
+#information on how to do this, it took me forever to find anything on checking every character instead of the whole string.
+#https://www.w3schools.com/python/ref_func_any.asp#:~:text=The%20any()%20function%20returns,()%20function%20will%20return%20False.
+#https://www.geeksforgeeks.org/python-test-if-string-contains-any-uppercase-character/
+
 
 def passwordCheck(password):
     passwordChecker = True
@@ -21,12 +25,12 @@ def passwordCheck(password):
         passwordChecker = False
 
     #if passwords do not contain numbers
-    if not any(char.isdigit() for char in password):
+    if not any(character.isdigit() for character in password):
         print('Password should have at least one numeral')
         passwordChecker = False
 
     #if password doesn't contain a capital letter
-    if not any(char.isupper() for char in password):
+    if not any(character.isupper() for character in password):
         print('Password should have at least one uppercase letter')
         passwordChecker = False
 
@@ -98,12 +102,13 @@ def PrintUserList():
     if loginSecure == True:
 
         titleBuilder('USER-LIST',100)
-
-        for p_id, p_info in UserList.items():
-            print("\nUSER ID:", p_id)
+        
+        #(user_id(user_info))
+        for user_id, user_info in UserList.items():
+            print("\nUSER ID:", user_id)
     
-            for key in p_info:
-                print(key + ':', p_info[key])
+            for key in user_info:
+                print(key + ':', user_info[key])
 
         print()
         titleBuilder('USER-LIST',100)
@@ -128,17 +133,23 @@ Print User - 'p'
 Exit - 'x'
 -
 Input: ''')
+            
+            #checking what was entered
+            #Exit
             if CreateUserMenu == 'x' or CreateUserMenu == 'Exit' or CreateUserMenu == 'exit':
                 return
             
+            #Print User
             elif CreateUserMenu == 'p' or CreateUserMenu == 'print' or CreateUserMenu == 'Print User' or CreateUserMenu == 'print user':
                 PrintUserList()
+
+            #Create User
             elif CreateUserMenu == 'c' or CreateUserMenu == 'create' or CreateUserMenu == 'Create User' or CreateUserMenu == 'create user':
                 UserID = input('''USERID (FIRST NAME : LAST NAME : USERNAME : PASSWORD)
 -                           
 USERID: ''')
         
-        
+                
                 while UserID in UserList.keys():
                     titleBuilder('-',100)
                     print('User ID Already Exists!')
@@ -153,12 +164,14 @@ USERID: ''')
                 #getting input for last name
                 Last = input('Last Name: ')
 
-                #getting input for username
+                #getting input for username and checking if it exists, loop until it has one that doesn't exist
                 while True:
                     username = input('Username: ')
 
                     # Check if the username already exists
                     username_exists = False
+
+                    #checking if username already in userlist
                     for userID in UserList.values():
                         if userID['Username'] == username:
                             username_exists = True
