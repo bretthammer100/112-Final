@@ -9,6 +9,31 @@ UserList = {'0000': {'First Name': 'Admin', 'Last Name': 'Admin', 'Username': 'a
 #security check
 loginSecure = False
 
+#---CHECKING-PASSWORDS-----------------------------------------------------------------------------------------------------------------------------
+#function for checking if passwords are strong
+
+def passwordCheck(password):
+    passwordChecker = True
+
+    #if passwords are less then 6 characters
+    if len(password) < 6:
+        print('Length of password should be atleast 6 Characters long.')
+        passwordChecker = False
+
+    #if passwords do not contain numbers
+    if not any(char.isdigit() for char in password):
+        print('Password should have at least one numeral')
+        passwordChecker = False
+
+    #if password doesn't contain a capital letter
+    if not any(char.isupper() for char in password):
+        print('Password should have at least one uppercase letter')
+        passwordChecker = False
+
+    #send back true or false
+    return passwordChecker
+    
+
 #---TITLES------------------------------------------------------------------------------------------------------------------------------------------
 #function for titles and length
 def titleBuilder(name, length):
@@ -20,54 +45,50 @@ def titleBuilder(name, length):
 def login(Username):
     #input for password
     Password = input('Enter your Password: ')
-    #searches through dictionary for matching username, then matching password
-    for k in UserList.keys():
-        if Username in UserList[k]['Username']:
-            print()
-            if Password in UserList[k]['Password']:
-                print('Logging In...')
-                #creating globals because I use them to print things in the menu
-                global CurrentUser
-                CurrentUser = Username
-                #global security check
-                global loginSecure
-                loginSecure = True
+
+    #searches through dictionary for matching username, then matching password of userID
+    for userID, user_info in UserList.items():
+        if Username == user_info['Username'] and Password == user_info['Password']:
+            print('Logging In...')
+            
+            # creating globals because I use them to print things in the menu
+            global CurrentUser
+            CurrentUser = Username
+            
+            # global security check
+            global loginSecure
+            loginSecure = True
 
 #------MAIN INPUT SCREEN-------------------------------------------------------------------------------------------------------------------------------
 
 def Main(UserInput):
+
         #Create user
-    #using try so that in the event you input something wrong i can say so
-    try:
-        #this looks complacted to me but it's really just asking if you want to make another user after making your first
-        if UserInput == 'create user' or UserInput == 'c':
+        if UserInput == 'create user' or UserInput == 'c' or UserInput == 'Create User' or UserInput == 'Create' or UserInput == 'create':
             CreateUser()
 
-        
         #Log Out
-        elif UserInput == 'log out' or UserInput == 'l':
+        elif UserInput == 'log out' or UserInput == 'l' or UserInput == 'Log Out' or UserInput == 'logout' or UserInput == 'Logout':
             print('Logged Out!')
             global loginSecure
             loginSecure = False
 
         #Print User
-        elif UserInput == 'print user' or UserInput == 'p':
+        elif UserInput == 'print user' or UserInput == 'p' or UserInput == 'print' or UserInput == 'Print' or UserInput == 'Print User':
             PrintUserList()
             input('Enter Anything to Return to Menu: ')
-        
+            
         #Remove User
-        elif UserInput == 'remove user' or UserInput == 'r':
+        elif UserInput == 'remove user' or UserInput == 'r' or UserInput == 'Remove User' or UserInput == 'remove' or UserInput == 'Remove':
             removeUser()
 
         #Enquire about a specific User
-        elif UserInput == 'inquire user' or UserInput == 'i':
+        elif UserInput == 'inquire user' or UserInput == 'i' or UserInput == 'Inquire' or UserInput == 'Inquire User' or UserInput == 'Inquire':
             inquireUser()
 
         #Modify User
-        elif UserInput == 'modify user' or UserInput == 'm':
+        elif UserInput == 'modify user' or UserInput == 'm' or UserInput == 'Modify' or UserInput == 'modify' or UserInput == 'Modify User':
             modifyUser()
-    finally:
-        print('Invalid Command!')
 
 #------PRINTING USER--------------------------------------------------------------------------------------------------------------------------------
 
@@ -75,12 +96,15 @@ def Main(UserInput):
 def PrintUserList():
     #helps with security
     if loginSecure == True:
+
         titleBuilder('USER-LIST',100)
+
         for p_id, p_info in UserList.items():
             print("\nUSER ID:", p_id)
     
             for key in p_info:
                 print(key + ':', p_info[key])
+
         print()
         titleBuilder('USER-LIST',100)
 
@@ -88,168 +112,271 @@ def PrintUserList():
 
 #Function for creating user
 def CreateUser():
-    #helps with security
-    if loginSecure == True:
-        titleBuilder('CURRENT-USERS',20)
-        PrintUserList()
-        titleBuilder('CREATE-USER',100)
 
-        #getting input for USERID
-        UserID = input('''USERID (FIRST NAME : LAST NAME : USERNAME : PASSWORD)
+    while True:
+
+        #helps with security
+        if loginSecure == True:
+            titleBuilder('CREATE-USER',100)
+            #getting input for USERID
+            
+            
+            CreateUserMenu = input('''Create User Menu
 -
-'User ID to create' - format in '0000'
+Create User - 'c'
+Print User - 'p'
 Exit - 'x'
 -
 Input: ''')
-        if UserID == 'x' or UserID == 'Exit' or UserID == 'exit':
-            return
-        while UserID in UserList.keys():
-            titleBuilder('-',100)
-            print('User ID Already Exists!')
-            titleBuilder('-',100)
-            UserID = input('''USERID (FIRST NAME : LAST NAME : USERNAME : PASSWORD)
--
-'User ID to create' - format in '0000'
-Exit - 'x'
--
-Input: ''')
-
-        #getting input for first name
-        First = input('First Name: ')
-
-        #getting input for last name
-        Last = input('Last Name: ')
-
-        #getting input for username
-        while True:
-            username = input('Username: ')
-
-            # Check if the username already exists
-            username_exists = False
-            for userID in UserList.values():
-                if userID['Username'] == username:
-                    username_exists = True
-                    break
-
-            if username_exists:
-                print('Username Already Exists!')
-            else:
-                break
-                
-        #getting input for password
-        Password = input('Password: ')
-        #if statement checking if password is longer then 8 characters
-        #else print password is weak
-        while len(Password) > 8:
-            break
-        else:
-            print('Password is Weak. Recommended Password is 8 characters long.')
-            Password = input('Password: ')
-
-        #creating user from inputs
-        UserList[UserID] = {'First': First, 'Last': Last, 'Username': username, 'Password': Password}
-
-        titleBuilder('CREATE-USER',100)
-
-        while True:
-            #another user input
-            AnotherUser = input('''
-Would you like to add another USER? 
--
-Yes - 'y'
-No - 'n'
--
-Input: ''')
-            if AnotherUser == 'yes' or AnotherUser == 'y' or AnotherUser == 'Yes':
-                CreateUser()
-            if AnotherUser == 'no' or AnotherUser == 'n' or AnotherUser == 'No':
+            if CreateUserMenu == 'x' or CreateUserMenu == 'Exit' or CreateUserMenu == 'exit':
                 return
-        #incase security check fails
-    else:
-        print('Login Not Secure!')
+            
+            elif CreateUserMenu == 'p' or CreateUserMenu == 'print' or CreateUserMenu == 'Print User' or CreateUserMenu == 'print user':
+                PrintUserList()
+            elif CreateUserMenu == 'c' or CreateUserMenu == 'create' or CreateUserMenu == 'Create User' or CreateUserMenu == 'create user':
+                UserID = input('''USERID (FIRST NAME : LAST NAME : USERNAME : PASSWORD)
+-                           
+USERID: ''')
+        
+        
+                while UserID in UserList.keys():
+                    titleBuilder('-',100)
+                    print('User ID Already Exists!')
+                    titleBuilder('-',100)
+                    UserID = input('''USERID (FIRST NAME : LAST NAME : USERNAME : PASSWORD)
+-                           
+USERID: ''')
 
+                #getting input for first name
+                First = input('First Name: ')
+
+                #getting input for last name
+                Last = input('Last Name: ')
+
+                #getting input for username
+                while True:
+                    username = input('Username: ')
+
+                    # Check if the username already exists
+                    username_exists = False
+                    for userID in UserList.values():
+                        if userID['Username'] == username:
+                            username_exists = True
+                            break
+
+                    if username_exists:
+                        print('Username Already Exists!')
+                    else:
+                        break
+                        
+                #getting input for password
+                titleBuilder('-',100)
+                Password = input('''Password Must Contain:
+-
+Number.
+Upper Case Character.
+6 Characters.
+-
+Password: ''')
+                
+                #if statement checking if password is longer then 8 characters
+                #else print password is weak
+                while True:
+                    if (passwordCheck(Password)):
+                        #creating user from inputs
+                        UserList[UserID] = {'First': First, 'Last': Last, 'Username': username, 'Password': Password}
+                        titleBuilder('-',100)
+                        print('User ID:',UserID,'Created!')
+                        break
+
+                    else:
+                        Password = input('Password: ')
+
+            #incase security check fails
+        else:
+            print('Login Not Secure!')
 
 #------REMOVING USER-----------------------------------------------------------------------------------------------------------------------------
 
 def removeUser():
     #security check
     if loginSecure == True:
+
+        #not sure how else to double break out of a loop
+        breaker = False
         #loops until you wanna stop removing users
-        while True:
+        while breaker == False:
+
             #loop for making sure the USER ID exists
             while True:
-                PrintUserList()
+
                 titleBuilder('REMOVE-USER',100)
-                userID = input('''What is the User ID of the Profile you'd like to remove?
-                               
+                removeMenu = input('''What information do you have about the user you want to delete?
 -
-'User ID to delete' - format is in '0000'
+User ID - 'id'
+Username - 'u'
 Exit - 'x'
--                            
+-
 Input: ''')
-                try:
-                    if userID == 'x' or userID == 'Exit' or userID == 'exit':
-                        breaker = True
-                        break
-                    for key in UserList[userID]:
-                        print(key, ':', UserList[userID][key])
+                titleBuilder('-',100)
+
+                #exiting remove menu
+                if removeMenu == 'x' or removeMenu == 'Exit' or removeMenu == 'exit':
+                    #for double loop
+                    breaker = True
                     break
-                #checking if it exists
-                except KeyError:
-                    print('Invalid User ID!')
-            titleBuilder('-',100)
-            if breaker == True:
-                break
-
-            #loop for checking confirmation
-            while True:
-                #input for confirming delete
-                userIDConfirmation = input('''
-Is this for sure the user you want to Delete?
+                
+                #removing by user ID
+                elif removeMenu == 'User ID' or removeMenu == 'id' or removeMenu == 'user id':
+                    userID = input('''User ID is in the form '0000'
 -
-Yes - "y" Confirm delete.
-No  - "n" Not Confirmed.
+UserID: ''')
+                    #if userID in userList
+                    if userID in UserList:
+
+                        #print user info
+                        for key in UserList[userID]:
+                            print(key, ':', UserList[userID][key])
+                        titleBuilder('-',100)
+
+                        #Check if they wanna delete
+                        confirmation = input('''Is this the user you would like to remove?
+-
+Yes - 'y'
+No - 'n'
 -
 Input: ''')
-        
-                if userIDConfirmation == 'yes' or userIDConfirmation == 'Yes' or userIDConfirmation == 'y':
-                    #remove user
-                    del UserList[userID]
-                    print('User removed!')
-                    titleBuilder('REMOVE-USER',100)
+                        #confirm yes
+                        if confirmation == 'y' or confirmation == 'yes' or confirmation == 'Yes':
+                            del UserList[userID]
+                            titleBuilder('-',100)
+                            print('User ID:',userID, 'Removed!')
 
-                    #checking if you wanna remove another user
-                    anotherInput = input('''
-Would you like to Remove another user?
+                        #confirm no
+                        if confirmation == 'n' or confirmation == 'no' or confirmation == 'No':
+                            titleBuilder('-',100)
+                            print('User ID:',userID, 'not Removed!')
+                            break
+
+                    #if userID not in userList print
+                    else:
+                        print('User is not in the database!')
+
+                #remove user with username
+                elif removeMenu == 'u' or removeMenu == 'Username' or removeMenu == 'username':
+
+                    #incase username does no exist i need a check
+                    usernameExists = False
+                    Username = input('Username: ')
+
+                    #for (user_id(userinfo))
+                    for user_id, user_info in UserList.items():
+
+                        #if Username is found in UserList
+                        if user_info['Username'] == Username:
+                            titleBuilder('-', 100)
+
+                            #print user ID
+                            print('User ID: ', user_id)
+
+                            #print user info by user id
+                            for key, value in user_info.items():
+                                print(key, ':', value)
+                                usernameExists = True
+                            titleBuilder('-', 100)
+
+                    #if a username exists run this
+                    if usernameExists == True:
+                        #confirmation check
+                        confirmation = input('''Is this the user you would like to remove?
 -
-Yes - "y"
-No  - "n"
+Yes - 'y'
+No - 'n'
 -
 Input: ''')
-                    if anotherInput == 'yes' or anotherInput == 'Yes' or anotherInput == 'y':
-                        removeUser()
+                        #remove user with username
+                        if confirmation == 'y' or confirmation == 'yes' or confirmation == 'Yes':
+                            del UserList[user_id]
+                            titleBuilder('-',100)
+                            print('Username:',Username, 'Removed!')
 
-                    elif anotherInput == 'no' or anotherInput == 'No' or anotherInput == 'n':
-                        return False
+                        #don't remove user from username
+                        if confirmation == 'n' or confirmation == 'no' or confirmation == 'No':
+                            titleBuilder('-',100)
+                            print('Username:',Username, 'not Removed!')
+                            break
                     
-                #returning to start if confirmation returns no
-                elif userIDConfirmation == 'no' or userIDConfirmation == 'No' or userIDConfirmation == 'n':
-                    print('User not removed! Returning to start.')
-                    break
-
-                #incase you input something invalid
-                else:
-                    print('Improper input!')
-    else:
-        #incase security check fails
-        print('Login Not Secure!')
-
-
-
+                    #incase user does not exist
+                    else:
+                        print('Username is not in database!')
+                
+                            
 #-----INQUIRE USER--------------------------------------------------------------------------------------------------------------------------------
 
 def inquireUser():
-    print('Inquire User')
+
+    while True:
+        titleBuilder('INQUIRE-USER',100)
+        userInput = input('''What information do you have about the user?
+                        
+-
+Username - 'u'
+User ID - 'id'
+Exit - 'x'
+-                            
+Input: ''')
+        
+        #Username Search
+        if userInput == 'u' or userInput == 'Username' or userInput == 'username':
+            Username = input('Username: ')
+            
+            #searching through list for username (UserID (User_info = FIRST NAME : LAST NAME : USERNAME : PASSWORD))
+            for user_id, user_info in UserList.items():
+
+                #if Username is found in UserList
+                if user_info['Username'] == Username:
+                    titleBuilder('-', 100)
+
+                    #print user ID and info
+                    print('User ID: ', user_id)
+
+                    for key, value in user_info.items():
+                        print(key, ':', value)
+
+                if user_info['Username'] != Username:
+                    Userfound = False
+
+            if Userfound == False:
+                print('User not found in Database!')
+
+            titleBuilder('-',100)
+            input('Enter Anything to Return to Menu: ')
+
+        #User ID Seach
+        elif userInput == 'id' or userInput == 'User ID' or userInput == 'user id':
+            titleBuilder('-',100)
+            UserID = input('''User ID is in the form '0000'
+-
+UserID: ''')
+
+            #try and except incase user does not exist or user inputs a letter or something wrong
+            try:
+                for key in UserList[UserID]:
+                    print(key, ':', UserList[UserID][key])
+            except KeyError:
+                print('User not found in Database!')
+
+            titleBuilder('-',100)
+            input('Enter Anything to Return to Menu: ')
+
+        #Exit search
+        elif userInput == 'x' or userInput == 'exit' or userInput == 'Exit':
+            return
+        
+        else:
+            titleBuilder('-',100)
+            print('Invalid Command!')
+    
     #enquire about a user from UserID or
 
 #-----MODIFY USER---------------------------------------------------------------------------------------------------------------------------------
@@ -258,8 +385,6 @@ def modifyUser():
     print('Modify User')
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------
-
-
 
 
 #Main Code after Logging in
@@ -289,7 +414,7 @@ login or 'l'- Login with your Username and Password
             UsernameInput = input('''Login Credentials:
 -
 Enter your Username: ''')
-            #incase you want to end the program
+            
             #calling function Login
             login(UsernameInput)
             if loginSecure == False:
@@ -303,19 +428,17 @@ Enter your Username: ''')
     titleBuilder('-',100)
     print('''Securely logged into''', CurrentUser)
     titleBuilder('-',100)
-    print('''
-Commands:
-    
---Every Command can be Shortened to it\'s First Letter--
-          
+    print('''Commands:
+                
 -
-create user - Create User Screen
-remove user - Remove User Screen
-inquire user - inquire User Screen
-modify user - Modify User Screen
-print user - Prints User List
-log out
+Create User  - 'c'   Create User Screen.
+Remove User  - 'r'   Remove User Screen.
+Inquire User - 'i'   inquire User Screen.
+Modify User  - 'm'   Modify User Screen.
+Print User   - 'p'   Prints User List.
+Log Out      - 'l'   Logs out.
 -''')
+    
     titleBuilder('-',100)
     #user input for what you'd like to do
     userInputMain = input('What would you like to do: ')
